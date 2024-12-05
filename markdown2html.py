@@ -16,6 +16,9 @@ if __name__ == "__main__":
         exit(1)
 
     else:
-        with open(html_file, "w") as f:
-            f.write("")
-            exit(0)
+        try:
+            with open(html_file, "w") as f:
+                f.write("")
+                exit(0)
+        except Exception as e:
+            exit(1)
