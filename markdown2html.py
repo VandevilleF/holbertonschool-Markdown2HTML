@@ -5,30 +5,56 @@ import os
 
 
 def convert_to_html(md_text):
-    """Convert Mardown title to HTML Tag"""
+    """Convert Mardown to HTML Tag"""
     html_line = []
     in_list = False
+    in_ord_list = False
 
     for line in md_text.splitlines():
+        # Headings
         if line.startswith('#'):
             header_lvl = len(line.split()[0])
             if 1 <= header_lvl <= 6:
                 content = line.strip("#").strip()
                 html_line.append(f"<h{header_lvl}>{content}</h{header_lvl}>")
 
+        # Unordered list
         elif line.startswith("- "):
             content = line[2:].strip()
+            if in_ord_list:
+                html_line.append("</ol>")
+                in_ord_list = False
             if not in_list:
                 html_line.append("<ul>")
                 in_list = True
             html_line.append(f"\t<li>{content}</li>")
+
+        # Ordered list
+        elif line.startswith("* "):
+            content = line[2:].strip()
+            if in_list:
+                html_line.append("</ul>")
+                in_list = False
+            if not in_ord_list:
+                html_line.append("<ol>")
+                in_ord_list = True
+            html_line.append(f"\t<li>{content}</li>")
+
         else:
             if in_list:
                 html_line.append("</ul>\n")
                 in_list = False
             html_line.append(line)
+            if in_ord_list:
+                html_line.append("</ol>\n")
+                in_ord_list = False
+            html_line.append(line)
+
     if in_list:
         html_line.append("</ul>\n")
+
+    if in_ord_list:
+        html_line.append("</ol>\n")
 
     return "\n".join(html_line)
 
