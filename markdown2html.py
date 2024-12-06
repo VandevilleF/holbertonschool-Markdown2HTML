@@ -70,7 +70,6 @@ def convert_to_html(md_text):
     if in_ord_list:
         html_line.append("</ol>\n")
 
-
     return "\n".join(html_line)
 
 
