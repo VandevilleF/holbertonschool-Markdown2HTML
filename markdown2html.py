@@ -9,6 +9,7 @@ def convert_to_html(md_text):
     html_line = []
     in_list = False
     in_ord_list = False
+    current_paragraph = []
 
     for line in md_text.splitlines():
         # Headings
@@ -40,21 +41,35 @@ def convert_to_html(md_text):
                 in_ord_list = True
             html_line.append(f"\t<li>{content}</li>")
 
+        # Simple text
+        elif line.strip():
+            if current_paragraph:
+                current_paragraph.append(f"<br/>\n\t{line.strip()}")
+            else:
+                current_paragraph.append(line.strip())
+
         else:
+            if current_paragraph:
+                html_line.append("<p>\n\t"
+                                         + '\n'.join(current_paragraph)
+                                         + "\n</p>")
+                current_paragraph = []
+
             if in_list:
-                html_line.append("</ul>\n")
+                html_line.append("</ul>")
                 in_list = False
-            html_line.append(line)
             if in_ord_list:
-                html_line.append("</ol>\n")
+                html_line.append("</ol>")
                 in_ord_list = False
-            html_line.append(line)
+
+    if current_paragraph:
+        html_line.append("<p>\n\t" + '\n'.join(current_paragraph) + "\n</p>\n")
 
     if in_list:
         html_line.append("</ul>\n")
-
     if in_ord_list:
         html_line.append("</ol>\n")
+
 
     return "\n".join(html_line)
 
@@ -73,8 +88,8 @@ if __name__ == "__main__":
 
     else:
         try:
-            with open(md_file, "r") as mardown_f:
-                md_content = mardown_f.read()
+            with open(md_file, "r") as markdown_f:
+                md_content = markdown_f.read()
 
             html_content = convert_to_html(md_content)
             with open(html_file, "w") as html_f:
