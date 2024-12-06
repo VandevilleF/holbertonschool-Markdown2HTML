@@ -15,16 +15,13 @@ def convert_to_html(md_text):
             if 1 <= header_lvl <= 6:
                 content = line.strip("#").strip()
                 html_line.append(f"<h{header_lvl}>{content}</h{header_lvl}>")
+
         elif line.startswith("- "):
             content = line[2:].strip()
             if not in_list:
                 html_line.append("<ul>")
-                in_list =True
+                in_list = True
             html_line.append(f"\t<li>{content}</li>")
-
-
-
-
         else:
             if in_list:
                 html_line.append("</ul>\n")
