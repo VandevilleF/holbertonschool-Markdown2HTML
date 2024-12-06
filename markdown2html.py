@@ -50,9 +50,8 @@ def convert_to_html(md_text):
 
         else:
             if current_paragraph:
-                html_line.append("<p>\n\t"
-                                         + '\n'.join(current_paragraph)
-                                         + "\n</p>")
+                html_line.append("<p>\n\t" + '\n'.join(current_paragraph)
+                                 + "\n</p>")
                 current_paragraph = []
 
             if in_list:
