@@ -3,6 +3,30 @@
 import sys
 import os
 import re
+import hashlib
+
+
+def formating_inline(line):
+    """Formate text for bold and italics tag"""
+    line = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", line)
+    line = re.sub(r"__(.+?)__", r"<em>\1</em>", line)
+    return line
+
+
+def but_why(line):
+    """Why ???"""
+    def convert_to_md5(match):
+        content = match.group(1)
+        md5_hash = hashlib.md5(content.encode()).hexdigest()
+        return md5_hash
+
+    line = re.sub(r"\[\[(.+?)\]\]", convert_to_md5, line)
+
+    def remove_c(match):
+        content = match.group(1)
+        return re.sub(r"[cC]", "", content)
+    line = re.sub(r"\(\((.+?)\)\)", remove_c, line)
+    return line
 
 
 def convert_to_html(md_text):
@@ -12,14 +36,9 @@ def convert_to_html(md_text):
     in_ord_list = False
     current_paragraph = []
 
-    def formating_inline(line):
-        """Formate text for bold and italics tag"""
-        line = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", line)
-        line = re.sub(r"__(.+?)__", r"<em>\1</em>", line)
-        return line
-
     for line in md_text.splitlines():
         line = formating_inline(line)
+        line = but_why(line)
         # Headings
         if line.startswith('#'):
             header_lvl = len(line.split()[0])
