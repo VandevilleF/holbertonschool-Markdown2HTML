@@ -4,17 +4,36 @@ import sys
 import os
 
 
-def convert_headings(md_text):
+def convert_to_html(md_text):
     """Convert Mardown title to HTML Tag"""
     html_line = []
+    in_list = False
 
     for line in md_text.splitlines():
         if line.startswith('#'):
             header_lvl = len(line.split()[0])
             if 1 <= header_lvl <= 6:
                 content = line.strip("#").strip()
-                html_line.append(f"<h{header_lvl}>{content}</h{header_lvl}>\n")
-    return "".join(html_line)
+                html_line.append(f"<h{header_lvl}>{content}</h{header_lvl}>")
+        elif line.startswith("- "):
+            content = line[2:].strip()
+            if not in_list:
+                html_line.append("<ul>")
+                in_list =True
+            html_line.append(f"\t<li>{content}</li>")
+
+
+
+
+        else:
+            if in_list:
+                html_line.append("</ul>\n")
+                in_list = False
+            html_line.append(line)
+    if in_list:
+        html_line.append("</ul>\n")
+
+    return "\n".join(html_line)
 
 
 if __name__ == "__main__":
@@ -33,8 +52,10 @@ if __name__ == "__main__":
         try:
             with open(md_file, "r") as mardown_f:
                 md_content = mardown_f.read()
+
+            html_content = convert_to_html(md_content)
             with open(html_file, "w") as html_f:
-                html_f.write(convert_headings(md_content))
+                html_f.write(html_content)
                 exit(0)
         except Exception as e:
             exit(1)
