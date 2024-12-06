@@ -2,6 +2,7 @@
 """Start a script"""
 import sys
 import os
+import re
 
 
 def convert_to_html(md_text):
@@ -11,7 +12,14 @@ def convert_to_html(md_text):
     in_ord_list = False
     current_paragraph = []
 
+    def formating_inline(line):
+        """Formate text for bold and italics tag"""
+        line = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", line)
+        line = re.sub(r"__(.+?)__", r"<em>\1</em>", line)
+        return line
+
     for line in md_text.splitlines():
+        line = formating_inline(line)
         # Headings
         if line.startswith('#'):
             header_lvl = len(line.split()[0])
